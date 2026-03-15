@@ -1,20 +1,20 @@
-# 🧠Awesome Agent Skills
+# 🧠 Awesome Agent Skills
 
-A collection of reusable coding standards and best practices, compatible with both **Claude Code** and **GitHub Copilot**. Drop these into any project to give your AI assistant consistent, opinionated guidance.
+A collection of reusable coding standards and best practices for AI coding agents. Compatible with **Claude Code**, **GitHub Copilot**, **Cursor**, and **Windsurf**. Drop these into any project to give your AI assistant consistent, opinionated guidance.
 
 ---
 
 ## Why this exists
 
-AI assistants are only as good as the context you give them. This repo packages hard-won engineering best practices into files that both Claude Code and GitHub Copilot understand natively — so you get consistent behaviour across tools and teams.
+AI coding agents are only as good as the context you give them. This repo packages hard-won engineering best practices into instruction files that all major AI tools understand natively — so you get consistent behaviour across tools and teams.
 
 ---
 
 ## Skills
 
-| Skill | Description | Claude Code | Copilot |
-|-------|-------------|:-----------:|:-------:|
-| [REST API Design](./rest-api-design/) | 12 production-grade REST API practices | ✅ | ✅ |
+| Skill | Description | Claude Code | Copilot | Cursor | Windsurf |
+|-------|-------------|:-----------:|:-------:|:------:|:--------:|
+| [REST API Design](./rest-api-design/) | 12 production-grade REST API practices | ✅ | ✅ | ✅ | ✅ |
 
 > More skills coming soon. [Contributions welcome!](#contributing)
 
@@ -22,41 +22,60 @@ AI assistants are only as good as the context you give them. This repo packages 
 
 ## How to use
 
-Each skill ships with two files:
+Each skill ships with four files — same content, different filenames for each tool:
 
-- **`CLAUDE.md`** — picked up automatically by Claude Code when placed at your repo root
-- **`.github/copilot-instructions.md`** — picked up automatically by GitHub Copilot for that repo
+| File | Tool |
+|------|------|
+| `CLAUDE.md` | Claude Code |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+| `.cursorrules` | Cursor |
+| `.windsurfrules` | Windsurf |
+
+`.github/copilot-instructions.md` is the **source of truth**. The other files are synced copies.
 
 ### Add a skill to your project
 
-1. Copy `CLAUDE.md` to your repo root
-2. Copy `.github/copilot-instructions.md` to your repo's `.github/` folder
-3. That's it — both tools will follow the instructions automatically
+1. Copy the files for the tools you use into your repo root
+2. That's it — your AI agent will follow the instructions automatically
 
 ```
 your-repo/
 ├── .github/
-│   └── copilot-instructions.md
-└── CLAUDE.md
+│   └── copilot-instructions.md   ← Copilot
+├── CLAUDE.md                     ← Claude Code
+├── .cursorrules                  ← Cursor
+└── .windsurfrules                ← Windsurf
+```
+
+### Keep files in sync
+
+When you update instructions, run the included sync script to propagate changes to all tool files:
+
+```bash
+cp .github/copilot-instructions.md CLAUDE.md
+cp .github/copilot-instructions.md .cursorrules
+cp .github/copilot-instructions.md .windsurfrules
+```
+
+Or use the provided `sync.sh`:
+
+```bash
+./sync.sh
 ```
 
 ### Use multiple skills
 
-Append the contents of multiple skill files together:
+Append the contents of multiple skills together:
 
 ```bash
-# Combine multiple skills into one CLAUDE.md
-cat rest-api-design/CLAUDE.md coding-standards/CLAUDE.md >> your-repo/CLAUDE.md
-
-# Same for Copilot
+# Combine multiple skills
 cat rest-api-design/.github/copilot-instructions.md \
     coding-standards/.github/copilot-instructions.md \
     >> your-repo/.github/copilot-instructions.md
+
+# Then sync to all tools
+cd your-repo && ./sync.sh
 ```
-
-### Claude Code only: `.skill` files
-
-If you use Claude.ai, each skill also ships as a `.skill` file that you can install via **Settings → Skills** for a more integrated experience.
 
 ---
 
@@ -70,25 +89,27 @@ Each skill lives in its own folder:
 
 ```
 skill-name/
-├── CLAUDE.md                        # Claude Code instructions (lean, points to Copilot file)
 ├── .github/
-│   └── copilot-instructions.md      # Full instructions (source of truth)
-└── skill-name.skill                 # Packaged Claude.ai skill (optional)
+│   └── copilot-instructions.md   # Full instructions — source of truth
+├── CLAUDE.md                     # Claude Code (synced copy)
+├── .cursorrules                  # Cursor (synced copy)
+├── .windsurfrules                # Windsurf (synced copy)
+└── sync.sh                       # Sync script
 ```
 
 ### Guidelines for a good skill
 
 - **One concern per skill** — REST API design, not "everything about backends"
 - **Concrete and actionable** — include ✅/❌ examples, not just vague principles
-- **Tool-agnostic language** — instructions should read naturally to both Claude and Copilot
-- **Keep `CLAUDE.md` lean** — it should reference `.github/copilot-instructions.md` as the source of truth to avoid duplication
+- **Tool-agnostic language** — instructions should read naturally to all agents
+- **Source of truth in one place** — edit `.github/copilot-instructions.md`, then run `sync.sh`
 
 ### Steps to contribute
 
 1. Fork this repo
 2. Create a folder for your skill: `mkdir my-skill-name`
 3. Add `.github/copilot-instructions.md` with your full instructions
-4. Add a `CLAUDE.md` that references it (use the existing ones as a template)
+4. Run `sync.sh` to generate the other tool files
 5. Open a PR with a short description of what problem the skill solves
 
 ---
