@@ -30,6 +30,7 @@ Each skill ships with four files — same content, different filenames for each 
 | `.github/copilot-instructions.md` | GitHub Copilot |
 | `.cursorrules` | Cursor |
 | `.windsurfrules` | Windsurf |
+| `AGENTS.md` | OpenAI Codex |
 
 `.github/copilot-instructions.md` is the **source of truth**. The other files are synced copies.
 
